@@ -1,4 +1,5 @@
-package project1;
+
+import java.util.Comparator;
 
 /**
  * Represents an expense entry with details about date, amount, and category.
@@ -11,18 +12,29 @@ package project1;
 public class Expense {
 
     // Attributes
-    private String date; // Date of the expense (e.g., "2024-01-01")
-    private double amount; // Amount spent
-    private String category; // Category of the expense (e.g., "Food", "Transport")
+    private final String date;      // Date of the expense (e.g., "2024-01-01")
+    private final double amount;    // Amount spent
+    private final String category;  // Category of the expense (e.g., "Food", "Transport")
 
     /**
      * Constructs an Expense object with the specified date, amount, and category.
      *
      * @param date     The date of the expense.
-     * @param amount   The amount spent.
+     * @param amount   The amount spent (must be non-negative).
      * @param category The category of the expense.
+     * @throws IllegalArgumentException if date/category is null/empty or amount is negative.
      */
     public Expense(String date, double amount, String category) {
+        if (date == null || date.trim().isEmpty()) {
+            throw new IllegalArgumentException("Date cannot be null or empty");
+        }
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("Category cannot be null or empty");
+        }
+
         this.date = date;
         this.amount = amount;
         this.category = category;
@@ -62,6 +74,10 @@ public class Expense {
      */
     @Override
     public String toString() {
-        return "Expense [Category: " + category + ", Amount: $" + amount + ", Date: " + date + "]";
+        return String.format("Expense [Date: %s, Amount: $%.2f, Category: %s]", date, amount, category);
     }
+
+    // Comparators for sorting
+    public static final Comparator<Expense> BY_DATE = Comparator.comparing(Expense::getDate);
+    public static final Comparator<Expense> BY_AMOUNT = Comparator.comparingDouble(Expense::getAmount);
 }

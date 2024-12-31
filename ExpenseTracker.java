@@ -1,4 +1,3 @@
-package project1;
 
 import java.io.FileWriter; // To write data to a file
 import java.io.FileReader; // To read data from a file
