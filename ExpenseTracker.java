@@ -3,13 +3,15 @@ package project1;
 import java.io.FileWriter; // To write data to a file
 import java.io.FileReader; // To read data from a file
 import java.io.BufferedWriter; // To write data efficiently
+import java.io.File;
 import java.io.BufferedReader; // To read data efficiently
 import java.io.IOException; // To handle file I/O exceptions
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Manages a list of expenses, allowing operations such as adding, viewing,
- * deleting, and calculating totals.
+ * deleting, searching, and generating reports.
  * 
  * @author logicthreader
  * @version 1.0
@@ -135,19 +137,138 @@ public class ExpenseTracker {
      */
     public static void main(String[] args) {
         ExpenseTracker tracker = new ExpenseTracker();
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
 
-        tracker.addExpense("2024-01-01", 50.0, "Food");
-        tracker.addExpense("2024-01-02", 20.0, "Transport");
-        tracker.addExpense("2024-01-01", 30.0, "Groceries");
+        while (!exit) {
+            System.out.println("=== Expense Tracker Menu ===");
+            System.out.println("1. Add Expense");
+            System.out.println("2. View All Expenses");
+            System.out.println("3. Delete Expense by Index");
+            System.out.println("4. Search Expenses");
+            System.out.println("   a. By Date");
+            System.out.println("   b. By Category");
+            System.out.println("   c. By Amount");
+            System.out.println("5. Generate Reports");
+            System.out.println("   a. Total by Category");
+            System.out.println("   b. Expenses in Date Range");
+            System.out.println("6. Save Expenses to File");
+            System.out.println("7. Load Expenses from File");
+            System.out.println("8. Exit");
+            System.out.print("Please enter your choice: ");
 
-        System.out.println("Search by Date (2024-01-01):");
-        System.out.println(tracker.searchByDate("2024-01-01"));
+            String choice = scanner.nextLine();
 
-        System.out.println("Search by Category (Food):");
-        System.out.println(tracker.searchByCategory("Food"));
+            switch (choice) {
+                case "1":
+                    System.out.println("Enter date (YYYY-MM-DD): ");
+                    String date = scanner.nextLine();
 
-        System.out.println("Search by Amount (20.0):");
-        System.out.println(tracker.searchByAmount(20.0));
+                    System.out.println("Enter amount: ");
+                    double amount = Double.parseDouble(scanner.nextLine());
+
+                    System.out.println("Enter category: ");
+                    String category = scanner.nextLine();
+
+                    tracker.addExpense(date, amount, category);
+                    System.out.println("Expense added successfully!");
+                    break;
+                case "2":
+                    tracker.viewExpenses();
+                    break;
+                case "3":
+                    System.out.println("Enter the index of the expense to be deleted: ");
+                    int index = Integer.parseInt(scanner.nextLine());
+                    tracker.deleteExpense(index);
+                    System.out.println("If your index is valid, the expense will be deleted.");
+                    break;
+                case "4a":
+                    System.out.println("Enter date (YYYY-MM-DD): ");
+                    String searchDate = scanner.nextLine();
+                    System.out.println(tracker.searchByDate(searchDate));
+                    break;
+                case "4b":
+                    System.out.println("Enter category: ");
+                    String searchCategory = scanner.nextLine();
+                    System.out.println(tracker.searchByCategory(searchCategory));
+                    break;
+                case "4c":
+                    System.out.println("Enter amount: ");
+                    double searchAmount = Double.parseDouble(scanner.nextLine());
+                    System.out.println(tracker.searchByAmount(searchAmount));
+                    break;
+                case "5a":
+                    System.out.println("Enter category to calculate total expenses: ");
+                    String reportCategory = scanner.nextLine();
+                    double totalCategoryExpenses = tracker.getTotalByCategory(reportCategory);
+                    System.out.println("Total expenses for category '" + reportCategory + "': $" + totalCategoryExpenses);
+                    break;
+                case "5b":
+                    System.out.println("Enter start date (YYYY-MM-DD): ");
+                    String startDate = scanner.nextLine();
+                    System.out.println("Enter end date (YYYY-MM-DD): ");
+                    String endDate = scanner.nextLine();
+                    ArrayList<Expense> expensesInRange = tracker.getExpensesInDateRange(startDate, endDate);
+
+                    if (expensesInRange.isEmpty())
+                    {
+                        System.out.println("No expenses found in the specified date range.");
+                    }
+                    else
+                    {
+                        System.out.println("Expenses from " +startDate + " to " + endDate + ":");
+                        for (Expense expense : expensesInRange)
+                        {
+                            System.out.println(expense);
+                        }
+                    }
+                    break;
+                case "6":
+                    System.out.println("Enter a filename to save to: ");
+                    String filename = scanner.nextLine();
+                    if (filename == null || filename.trim().isEmpty())
+                    {
+                        System.out.println("Filename cannot be empty. Please try again");
+                        break;
+                    }
+                    if (!filename.matches("^[a-zA-Z0-9._-]+\\.(txt|csv)$")) {
+                        System.out.println("Invalid filename. Only letters, numbers, '-', '_', and extensions '.txt' or '.csv' are allowed.");
+                        break;
+                    }
+                    tracker.saveToFile(filename);
+                    System.out.println("Expenses have been saved to " +filename);
+                    break;
+                case "7":
+                    System.out.println("Enter a filename to load from: ");
+                    String filename2 = scanner.nextLine();
+                    if (filename2 == null || filename2.trim().isEmpty())
+                    {
+                        System.out.println("Filename cannot be empty. Please try again");
+                        break;
+                    }
+                    if (!filename2.matches("^[a-zA-Z0-9._-]+\\.(txt|csv)$")) {
+                        System.out.println("Invalid filename. Only letters, numbers, '-', '_', and extensions '.txt' or '.csv' are allowed.");
+                        break;
+                    }
+                    File file = new File(filename2);
+                    if (!file.exists() || !file.isFile())
+                    {
+                        System.out.println("Error: File does not exist or is not a valid file.");
+                        break;
+                    }
+                    tracker.loadFromFile(filename2);
+                    System.out.println("Expenses have been successfully loaded from " + filename2);
+                    break;
+                case "8":
+                    exit = true;
+                    System.out.println("Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+        scanner.close();
     }
 
     /**
