@@ -199,4 +199,42 @@ public class ExpenseTracker {
         return result;
     }
 
+    /**
+     * Calculates the total expenses for a specific category.
+     * 
+     * @param category The category to calculate the total for.
+     * @return The total sum of expenses in the given category.
+     */
+    public double getTotalByCategory(String category) {
+        double sum = 0.0;
+        for (Expense expense : expenses) {
+            if (expense.getCategory().equals(category)) {
+                sum += expense.getAmount();
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * Retrieves all expenses within a given date range.
+     * 
+     * @param startDate The start date of the range (inclusive).
+     * @param endDate   The end date of the range (inclusive).
+     * @return A list of expenses within the specified date range.
+     */
+    public ArrayList<Expense> getExpensesInDateRange(String startDate, String endDate) {
+        ArrayList<Expense> result = new ArrayList<>();
+        for (Expense expense : expenses)
+        {
+            if (expense.getDate().compareTo(startDate) >= 0 && expense.getDate().compareTo(endDate) <= 0)
+            {
+                result.add(expense);
+            }
+        }
+        if (result.isEmpty()) {
+            System.out.println("No expenses found in the given date range.");
+        }
+        return result;
+    }
+
 }
