@@ -1,6 +1,5 @@
 package project1;
 
-import java.io.File; // To represent the file
 import java.io.FileWriter; // To write data to a file
 import java.io.FileReader; // To read data from a file
 import java.io.BufferedWriter; // To write data efficiently
@@ -139,13 +138,65 @@ public class ExpenseTracker {
 
         tracker.addExpense("2024-01-01", 50.0, "Food");
         tracker.addExpense("2024-01-02", 20.0, "Transport");
-        tracker.viewExpenses();
+        tracker.addExpense("2024-01-01", 30.0, "Groceries");
 
-        System.out.println("Total Expenses: $" + tracker.getTotalExpenses());
+        System.out.println("Search by Date (2024-01-01):");
+        System.out.println(tracker.searchByDate("2024-01-01"));
 
-        tracker.deleteExpense(0);
-        tracker.viewExpenses();
+        System.out.println("Search by Category (Food):");
+        System.out.println(tracker.searchByCategory("Food"));
 
-        System.out.println("Total Expenses after deletion: $" + tracker.getTotalExpenses());
+        System.out.println("Search by Amount (20.0):");
+        System.out.println(tracker.searchByAmount(20.0));
     }
+
+    /**
+     * Finds expenses by date.
+     * 
+     * @param date The date to search for.
+     * @return List of matching expenses.
+     */
+    public ArrayList<Expense> searchByDate(String date) {
+        ArrayList<Expense> result = new ArrayList<>();
+        for (Expense expense : expenses) {
+            if (expense.getDate().equals(date)) {
+                result.add(expense);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Finds expenses by category.
+     * 
+     * @param category The category to search for.
+     * @return List of matching expenses.
+     */
+    public ArrayList<Expense> searchByCategory(String category) {
+        ArrayList<Expense> result = new ArrayList<>();
+        for (Expense expense : expenses) {
+            if (expense.getCategory().equals(category)) {
+                result.add(expense);
+            }
+        }
+        return result;
+
+    }
+
+    /**
+     * Finds expenses by amount.
+     * 
+     * @param amount The amount to search for.
+     * @return List of matching expenses.
+     */
+    public ArrayList<Expense> searchByAmount(double amount) {
+        ArrayList<Expense> result = new ArrayList<>();
+        for (Expense expense : expenses) {
+            if (expense.getAmount() == amount) {
+                result.add(expense);
+            }
+        }
+        return result;
+    }
+
 }
