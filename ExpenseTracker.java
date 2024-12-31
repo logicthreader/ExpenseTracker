@@ -200,7 +200,8 @@ public class ExpenseTracker {
                     System.out.println("Enter category to calculate total expenses: ");
                     String reportCategory = scanner.nextLine();
                     double totalCategoryExpenses = tracker.getTotalByCategory(reportCategory);
-                    System.out.println("Total expenses for category '" + reportCategory + "': $" + totalCategoryExpenses);
+                    System.out
+                            .println("Total expenses for category '" + reportCategory + "': $" + totalCategoryExpenses);
                     break;
                 case "5b":
                     System.out.println("Enter start date (YYYY-MM-DD): ");
@@ -209,54 +210,28 @@ public class ExpenseTracker {
                     String endDate = scanner.nextLine();
                     ArrayList<Expense> expensesInRange = tracker.getExpensesInDateRange(startDate, endDate);
 
-                    if (expensesInRange.isEmpty())
-                    {
+                    if (expensesInRange.isEmpty()) {
                         System.out.println("No expenses found in the specified date range.");
-                    }
-                    else
-                    {
-                        System.out.println("Expenses from " +startDate + " to " + endDate + ":");
-                        for (Expense expense : expensesInRange)
-                        {
+                    } else {
+                        System.out.println("Expenses from " + startDate + " to " + endDate + ":");
+                        for (Expense expense : expensesInRange) {
                             System.out.println(expense);
                         }
                     }
                     break;
                 case "6":
-                    System.out.println("Enter a filename to save to: ");
-                    String filename = scanner.nextLine();
-                    if (filename == null || filename.trim().isEmpty())
-                    {
-                        System.out.println("Filename cannot be empty. Please try again");
-                        break;
-                    }
-                    if (!filename.matches("^[a-zA-Z0-9._-]+\\.(txt|csv)$")) {
-                        System.out.println("Invalid filename. Only letters, numbers, '-', '_', and extensions '.txt' or '.csv' are allowed.");
-                        break;
-                    }
-                    tracker.saveToFile(filename);
-                    System.out.println("Expenses have been saved to " +filename);
+                    String saveFilename = getValidFilename(scanner, "save");
+                    tracker.saveToFile(saveFilename);
+                    System.out.println("Expenses successfully saved to " + saveFilename);
                     break;
                 case "7":
-                    System.out.println("Enter a filename to load from: ");
-                    String filename2 = scanner.nextLine();
-                    if (filename2 == null || filename2.trim().isEmpty())
-                    {
-                        System.out.println("Filename cannot be empty. Please try again");
-                        break;
-                    }
-                    if (!filename2.matches("^[a-zA-Z0-9._-]+\\.(txt|csv)$")) {
-                        System.out.println("Invalid filename. Only letters, numbers, '-', '_', and extensions '.txt' or '.csv' are allowed.");
-                        break;
-                    }
-                    File file = new File(filename2);
-                    if (!file.exists() || !file.isFile())
-                    {
+                    String loadFileName = getValidFilename(scanner, "load");
+                    if (!fileExists(loadFileName)) {
                         System.out.println("Error: File does not exist or is not a valid file.");
                         break;
                     }
-                    tracker.loadFromFile(filename2);
-                    System.out.println("Expenses have been successfully loaded from " + filename2);
+                    tracker.loadFromFile(loadFileName);
+                    System.out.println("Expenses loaded successfully from: " + loadFileName);
                     break;
                 case "8":
                     exit = true;
@@ -344,10 +319,8 @@ public class ExpenseTracker {
      */
     public ArrayList<Expense> getExpensesInDateRange(String startDate, String endDate) {
         ArrayList<Expense> result = new ArrayList<>();
-        for (Expense expense : expenses)
-        {
-            if (expense.getDate().compareTo(startDate) >= 0 && expense.getDate().compareTo(endDate) <= 0)
-            {
+        for (Expense expense : expenses) {
+            if (expense.getDate().compareTo(startDate) >= 0 && expense.getDate().compareTo(endDate) <= 0) {
                 result.add(expense);
             }
         }
@@ -355,6 +328,40 @@ public class ExpenseTracker {
             System.out.println("No expenses found in the given date range.");
         }
         return result;
+    }
+
+    private static boolean isValidFilename(String filename) {
+        return filename != null && !filename.trim().isEmpty() && filename.matches("^[a-zA-Z0-9._-]+\\.(txt|csv)$");
+    }
+
+    /**
+ * Prompts the user until a valid filename is entered.
+ * 
+ * @param scanner The Scanner object for user input.
+ * @param operation The operation being performed (save or load).
+ * @return A valid filename entered by the user.
+ */
+private static String getValidFilename(Scanner scanner, String operation) {
+    String filename;
+    do {
+        System.out.println("Enter a valid filename to " + operation + " (.txt or .csv): ");
+        filename = scanner.nextLine();
+        if (!isValidFilename(filename)) {
+            System.out.println("❌ Invalid filename. Please try again.");
+        }
+    } while (!isValidFilename(filename));
+    return filename;
+}
+
+    /**
+     * Checks if the given file exists and is a valid file.
+     * 
+     * @param filename The filename to check.
+     * @return True if the file exists and is valid, false otherwise.
+     */
+    private static boolean fileExists(String filename) {
+        File file = new File(filename);
+        return file.exists() && file.isFile();
     }
 
 }
